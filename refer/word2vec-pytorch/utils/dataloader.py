@@ -5,6 +5,7 @@ from torchtext.data import to_map_style_dataset
 from torchtext.data.utils import get_tokenizer
 from torchtext.vocab import build_vocab_from_iterator
 from torchtext.datasets import WikiText2, WikiText103
+# from torchtext.datasets import PennTreebank
 
 from utils.constants import (
     CBOW_N_WORDS,
@@ -32,6 +33,14 @@ def get_data_iterator(ds_name, ds_type, data_dir):
         raise ValueError("Choose dataset from: WikiText2, WikiText103")
     data_iter = to_map_style_dataset(data_iter)
     return data_iter
+
+# def get_data_iterator(ds_name, ds_type, data_dir):
+#     if ds_name == "PennTreebank":
+#         data_iter = PennTreebank(root=data_dir, split=(ds_type))
+#     else:
+#         raise ValueError("Choose dataset from: PennTreebank")
+#     data_iter = to_map_style_dataset(data_iter)
+#     return data_iter
 
 
 def build_vocab(data_iter, tokenizer):
