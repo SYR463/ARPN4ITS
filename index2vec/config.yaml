@@ -1,7 +1,8 @@
 model_name: cbow
+#model_name: cbow, skip, combine
 
 dataset: WikiText2
-data_dir: data/
+data_dir: /mnt/d/project/python/ARPN4ITS/dataPreprocess/test/
 train_batch_size: 96
 val_batch_size: 96
 shuffle: True
