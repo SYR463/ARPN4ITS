@@ -51,12 +51,21 @@ if __name__ == '__main__':
     N = 6
 
     vocab = []
-    vocab = create_MBR_vocab(vocab)
+    vocab = create_MBR_vocab(vocab, M, N)
     # 添加其他特殊标记（节点类型标记 以及 特殊标记）
-    vocab = ["<L>", "<NL>", "<BEG>", "<END>", "<S>"] + vocab
+    vocab = ["<UNK>", "<L>", "<NL>", "<BEG>", "<END>", "<S>"] + vocab
 
     # 词到索引映射
-    word_to_index = {word: idx for idx, word in enumerate(vocab)}
+    word_to_index = {}
+
+    # 为特殊标记分配索引 1 到 6
+    special_tokens = ["<UNK>", "<L>", "<NL>", "<BEG>", "<END>", "<S>"]
+    for idx, token in enumerate(special_tokens, start=1):
+        word_to_index[token] = idx
+
+    # 为剩余的词汇分配索引，从17开始
+    for idx, word in enumerate(vocab[6:], start=17):  # 忽略前5个特殊标记
+        word_to_index[word] = idx
 
     # 保存词汇表
     with open('vocab.json', 'w') as f:

@@ -70,10 +70,12 @@ def print_node_context_info(node):
     # print(f"Children: {children_str}")
     # print("-" * 50)
 
-    # 一行输出
-    # print(f"{node['line']} {parent_line if parent_line else 'None'} {siblings_str} {children_str}")
+    # 控制空格：确保每两个字符之间有一个空格，且开头和结尾没有多余的空格
+    # 使用 split 和 join 来处理
+    result = f"{node['line']} {parent_line if parent_line else ''} {siblings_str} {children_str}".strip()
+    result = ' '.join(result.split())
 
-    result = f"{node['line']} {parent_line if parent_line else 'None'} {siblings_str} {children_str}"
+    # print(result)
     return result
 
 
@@ -112,19 +114,8 @@ def process_files(input_folder, output_folder):
 if __name__ == '__main1__':
     # 示例树形结构文本
     text = """
-    <NL> A1 E14
-      <NL> A1 E6
-        <L> A1 B2
-        <L> D3 E4
-        <L> B4 C5
-        <L> A5 B6
-        <L> B5 C6
-      <NL> B8 E14
-        <L> D8 E9
-        <L> B9 C10
-        <L> C9 D10
-        <L> B11 C12
-        <L> C13 D14
+    <NL> C2     D3
+      <L> C2 D3
     """
 
     # 解析树形结构
