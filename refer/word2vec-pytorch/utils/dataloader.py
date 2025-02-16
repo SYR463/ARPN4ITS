@@ -1,8 +1,13 @@
+import logging
+import os
+
 import torch
 from functools import partial
 from torch.utils.data import DataLoader
 from torchtext.data import to_map_style_dataset
+from torchtext.data.datasets_utils import _RawTextIterableDataset
 from torchtext.data.utils import get_tokenizer
+from torchtext.datasets.wikitext2 import NUM_LINES
 from torchtext.vocab import build_vocab_from_iterator
 from torchtext.datasets import WikiText2, WikiText103
 # from torchtext.datasets import PennTreebank
@@ -24,9 +29,24 @@ def get_english_tokenizer():
     return tokenizer
 
 
+from torchtext.data.datasets_utils import (
+    _RawTextIterableDataset,
+    _wrap_split_argument,
+    _add_docstring_header,
+    _find_match,
+    _create_dataset_directory,
+    _read_text_iterator,
+)
+
+from utils.loadWiki import loadWikiText
+
 def get_data_iterator(ds_name, ds_type, data_dir):
     if ds_name == "WikiText2":
-        data_iter = WikiText2(root=data_dir, split=(ds_type))
+        # data_iter = WikiText2(root="../data/WikiText2", split=(ds_type))
+
+        data_iter = loadWikiText(root="/mnt/d/project/ARPN4ITS/refer/word2vec-pytorch/data/WikiText2/", split=(ds_type))
+
+
     elif ds_name == "WikiText103":
         data_iter = WikiText103(root=data_dir, split=(ds_type))
     else:

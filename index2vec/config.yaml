@@ -1,5 +1,5 @@
-model_name: cbow
-#model_name: cbow, skip, combine
+model_name: skipgram
+#model_name: cbow, skipgram, combine
 
 dataset: WikiText2
 data_dir: /mnt/d/project/python/ARPN4ITS/dataPreprocess/test/

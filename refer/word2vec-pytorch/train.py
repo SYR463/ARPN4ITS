@@ -16,7 +16,7 @@ from utils.helper import (
 
 
 def train(config):
-    os.makedirs(config["model_dir"])
+    # os.makedirs(config["model_dir"])
     
     train_dataloader, vocab = get_dataloader_and_vocab(
         model_name=config["model_name"],
@@ -49,7 +49,8 @@ def train(config):
     optimizer = optimizer_class(model.parameters(), lr=config["learning_rate"])
     lr_scheduler = get_lr_scheduler(optimizer, config["epochs"], verbose=True)
 
-    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+    # device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+    device = "cpu"
 
     trainer = Trainer(
         model=model,
