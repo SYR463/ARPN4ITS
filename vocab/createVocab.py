@@ -47,8 +47,10 @@ def create_MBR_vocab(vocab, M, N):
 if __name__ == '__main__':
 
     # 预定义的网格个数
-    M = 155
-    N = 6
+    M = 6
+    N = 5
+
+    vocab_filename = 'vocab_preExper.json'
 
     vocab = []
     vocab = create_MBR_vocab(vocab, M, N)
@@ -60,19 +62,22 @@ if __name__ == '__main__':
 
     # 为特殊标记分配索引 1 到 6
     special_tokens = ["<UNK>", "<L>", "<NL>", "<BEG>", "<END>", "<S>"]
-    for idx, token in enumerate(special_tokens, start=1):
+    for idx, token in enumerate(special_tokens, start=0):
         word_to_index[token] = idx
 
-    # 为剩余的词汇分配索引，从17开始
-    for idx, word in enumerate(vocab[6:], start=17):  # 忽略前5个特殊标记
+    # # 为剩余的词汇分配索引，从17开始
+    # for idx, word in enumerate(vocab[6:], start=17):  # 忽略前6个特殊标记
+    #     word_to_index[word] = idx
+
+    for idx, word in enumerate(vocab[6:], start=6):  # 忽略前6个特殊标记
         word_to_index[word] = idx
 
     # 保存词汇表
-    with open('vocab.json', 'w') as f:
+    with open(vocab_filename, 'w') as f:
         json.dump(word_to_index, f)
 
     # 加载词汇表
-    with open('vocab.json', 'r') as f:
+    with open(vocab_filename, 'r') as f:
         word_to_index = json.load(f)
 
     print(word_to_index)

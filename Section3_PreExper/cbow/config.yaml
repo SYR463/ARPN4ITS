@@ -1,0 +1,18 @@
+model_name: cbow
+#model_name: cbow, skipgram, combine
+
+dataset: WikiText2
+# 处理后的带有label的 R-tree 的 node token 上下文
+data_dir: /mnt/d/project/Java/rtree_construct/preExperData/RTreeTokenContext
+train_batch_size: 96
+val_batch_size: 96
+shuffle: True
+
+optimizer: Adam
+learning_rate: 0.025
+epochs: 50
+train_steps: 
+val_steps: 
+
+checkpoint_frequency: 
+model_dir: weights/cbow_preExper

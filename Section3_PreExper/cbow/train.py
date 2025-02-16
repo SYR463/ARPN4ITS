@@ -1,4 +1,6 @@
 import argparse
+
+import numpy as np
 import yaml
 import os
 import torch
@@ -51,8 +53,8 @@ def train(config):
     optimizer = optimizer_class(model.parameters(), lr=config["learning_rate"])
     lr_scheduler = get_lr_scheduler(optimizer, config["epochs"], verbose=True)
 
-    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-    # device = "cpu"
+    # device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+    device = "cpu"
 
     trainer = Trainer(
         model=model,
@@ -73,13 +75,19 @@ def train(config):
     trainer.train()
     print("Training finished.")
 
-    # 可视化前100个词的t-SNE结果
-    visualize_word_embeddings_after_training(trainer, num_words=1000)
+    # 可视化前1000个词的t-SNE结果
+    # visualize_word_embeddings_after_training(trainer, num_words=1000)
 
     trainer.save_model()
     trainer.save_loss()
     save_vocab(vocab, config["model_dir"])
     save_config(config, config["model_dir"])
+
+    # 保存词向量（嵌入）
+    embeddings = model.embeddings.weight.detach().cpu().numpy()  # 假设嵌入在 `model.embeddings` 中
+    np.save(os.path.join(config["model_dir"], "word_embeddings.npy"), embeddings)
+    print("Word embeddings saved.")
+
     print("Model artifacts saved to folder:", config["model_dir"])
     
     
