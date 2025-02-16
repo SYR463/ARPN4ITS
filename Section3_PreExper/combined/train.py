@@ -18,43 +18,39 @@ from utils.helper import (
     save_vocab,
 )
 
-
 def train(config):
-    # os.makedirs(config["model_dir"])
-    
+
+    # 阶段1：使用Skip-Gram训练非叶节点
     train_dataloader, vocab = get_dataloader_and_vocab(
-        model_name=config["model_name"],
-        # ds_name=config["dataset"],
-        # ds_type="train",
+        model_name="skipgram",
         data_dir=config["data_dir"],
+        # data_dir=config["data_dir_non_leaf"],
         batch_size=config["train_batch_size"],
         shuffle=config["shuffle"],
-        vocab=None,
+        # node_type="non_leaf"
     )
 
     val_dataloader, _ = get_dataloader_and_vocab(
-        model_name=config["model_name"],
+        model_name="skipgram",
         # ds_name=config["dataset"],
         # ds_type="valid",
         data_dir=config["data_dir"],
         batch_size=config["val_batch_size"],
         shuffle=config["shuffle"],
-        vocab=vocab,
+        # vocab=vocab,
     )
 
-    vocab_size = len(vocab)
-    print(f"Vocabulary size: {vocab_size}")
+    model_class = get_model_class("skipgram")
+    model = model_class(vocab_size=len(vocab))
 
-    model_class = get_model_class(config["model_name"])
-    model = model_class(vocab_size=vocab_size)
     criterion = nn.CrossEntropyLoss()
-
-    optimizer_class = get_optimizer_class(config["optimizer"])
-    optimizer = optimizer_class(model.parameters(), lr=config["learning_rate"])
+    optimizer = torch.optim.SGD(model.parameters(), lr=config["learning_rate"])
     lr_scheduler = get_lr_scheduler(optimizer, config["epochs"], verbose=True)
+
 
     # device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     device = "cpu"
+
 
     trainer = Trainer(
         model=model,
@@ -69,14 +65,11 @@ def train(config):
         lr_scheduler=lr_scheduler,
         device=device,
         model_dir=config["model_dir"],
-        model_name=config["model_name"],
+        model_name="skipgram"
     )
+    trainer.train_phase(phase=1)
 
-    trainer.train()
-    print("Training finished.")
-
-    # 可视化前1000个词的t-SNE结果
-    # visualize_word_embeddings_after_training(trainer, num_words=1000)
+    print("Phase1: Skip-Gram Training Finished.")
 
     trainer.save_model()
     trainer.save_loss()
@@ -85,17 +78,77 @@ def train(config):
 
     # 保存词向量（嵌入）
     embeddings = model.embeddings.weight.detach().cpu().numpy()  # 假设嵌入在 `model.embeddings` 中
-    np.save(os.path.join(config["model_dir"], "word_embeddings.npy"), embeddings)
-    print("Word embeddings saved.")
+    np.save(os.path.join(config["model_dir"], "skipgram_word_embeddings.npy"), embeddings)
+    print("Skip-Gram Word embeddings saved.")
 
     print("Model artifacts saved to folder:", config["model_dir"])
-    
-    
+
+    # 阶段2：使用CBOW训练叶节点
+
+    train_dataloader, vocab = get_dataloader_and_vocab(
+        model_name="cbow",
+        data_dir=config["data_dir"],
+        # data_dir=config["data_dir_non_leaf"],
+        batch_size=config["train_batch_size"],
+        shuffle=config["shuffle"],
+        # node_type="non_leaf"
+    )
+
+    val_dataloader, _ = get_dataloader_and_vocab(
+        model_name="cbow",
+        # ds_name=config["dataset"],
+        # ds_type="valid",
+        data_dir=config["data_dir"],
+        batch_size=config["val_batch_size"],
+        shuffle=config["shuffle"],
+        # vocab=vocab,
+    )
+
+    model_class = get_model_class("cbow")
+    model = model_class(vocab_size=len(vocab))
+
+    criterion = nn.CrossEntropyLoss()
+    optimizer = torch.optim.SGD(model.parameters(), lr=config["learning_rate"])
+    lr_scheduler = get_lr_scheduler(optimizer, config["epochs"], verbose=True)
+
+    trainer = Trainer(
+        model=model,
+        epochs=config["epochs"],
+        train_dataloader=train_dataloader,
+        train_steps=config["train_steps"],
+        val_dataloader=val_dataloader,
+        val_steps=config["val_steps"],
+        criterion=criterion,
+        optimizer=optimizer,
+        checkpoint_frequency=config["checkpoint_frequency"],
+        lr_scheduler=lr_scheduler,
+        device=device,
+        model_dir=config["model_dir"],
+        model_name="cbow"
+    )
+    trainer.train_phase(phase=2)
+
+    print("Phase2: CBOW Training Finished.")
+
+    trainer.save_model()
+    trainer.save_loss()
+    save_vocab(vocab, config["model_dir"])
+    save_config(config, config["model_dir"])
+
+    # 保存词向量（嵌入）
+    embeddings = model.embeddings.weight.detach().cpu().numpy()  # 假设嵌入在 `model.embeddings` 中
+    np.save(os.path.join(config["model_dir"], "cbow_word_embeddings.npy"), embeddings)
+    print("CBOW Word embeddings saved.")
+
+    print("Model artifacts saved to folder:", config["model_dir"])
+
+
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('--config', type=str, required=True, help='path to yaml config')
     args = parser.parse_args()
-    
+
     with open(args.config, 'r') as stream:
         config = yaml.safe_load(stream)
+
     train(config)

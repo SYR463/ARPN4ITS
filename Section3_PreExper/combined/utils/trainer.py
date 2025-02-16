@@ -6,7 +6,7 @@ import torch
 
 class Trainer:
     """Main class for model training"""
-    
+
     def __init__(
         self,
         model,
@@ -22,7 +22,7 @@ class Trainer:
         device,
         model_dir,
         model_name,
-    ):  
+    ):
         self.model = model
         self.epochs = epochs
         self.train_dataloader = train_dataloader
@@ -40,21 +40,15 @@ class Trainer:
         self.loss = {"train": [], "val": []}
         self.model.to(self.device)
 
-    def train(self):
+    def train_phase(self, phase=1):
+        """Train the model for a specific phase (1 for Skip-Gram, 2 for CBOW)"""
         for epoch in range(self.epochs):
             self._train_epoch()
             self._validate_epoch()
             print(
-                "Epoch: {}/{}, Train Loss={:.5f}, Val Loss={:.5f}".format(
-                    epoch + 1,
-                    self.epochs,
-                    self.loss["train"][-1],
-                    self.loss["val"][-1],
-                )
+                f"Epoch: {epoch + 1}/{self.epochs}, Train Loss={self.loss['train'][-1]:.5f}, Val Loss={self.loss['val'][-1]:.5f}"
             )
-
             self.lr_scheduler.step()
-
             if self.checkpoint_frequency:
                 self._save_checkpoint(epoch)
 

@@ -1,5 +1,5 @@
-model_name: skipgram
-#model_name: cbow, skipgram, combine
+model_name: combined
+#model_name: cbow, skipgram, combined
 
 dataset: WikiText2
 # 处理后的带有label的 R-tree 的 node token 上下文
@@ -15,4 +15,4 @@ train_steps:
 val_steps: 
 
 checkpoint_frequency: 
-model_dir: weights/skipgram_preExper
+model_dir: weights/combined_preExper

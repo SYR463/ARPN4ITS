@@ -34,7 +34,7 @@ def tsne_embeddings(embeddings, n_components=2, random_state=42):
     return reduced_embeddings
 
 
-def plot_tsne_embeddings(reduced_embeddings, word_list, labels=None, title="t-SNE of Skip-Gram", output_path="tsne_output.png"):
+def plot_tsne_embeddings(reduced_embeddings, word_list, labels=None, title="t-SNE of Combined", output_path="tsne_output.png"):
     """
     绘制t-SNE降维后的词向量
     :param reduced_embeddings: t-SNE降维后的二维词向量
@@ -58,8 +58,8 @@ def plot_tsne_embeddings(reduced_embeddings, word_list, labels=None, title="t-SN
     plt.title(title)
 
     # 设置x轴和y轴的显示范围，调整这部分以只聚焦中心区域
-    plt.xlim([2.28, 2.34])  # 调整为适合的x轴范围
-    plt.ylim([1.86, 1.91])  # 调整为适合的y轴范围
+    plt.xlim([-1.5, -1.15])  # 调整为适合的x轴范围
+    plt.ylim([-2.1, -1.6])  # 调整为适合的y轴范围
 
     # 保存图片
     plt.savefig(output_path)
@@ -71,7 +71,7 @@ def plot_tsne_embeddings(reduced_embeddings, word_list, labels=None, title="t-SN
 
 def visualize_word_embeddings_from_saved(model_dir, num_words=36):
     # 加载保存的词嵌入和词汇表
-    embeddings = np.load(os.path.join(model_dir, "word_embeddings.npy"))
+    embeddings = np.load(os.path.join(model_dir, "cbow_word_embeddings.npy"))
     word_list = load_vocab("/mnt/d/project/python/ARPN4ITS/vocab/vocab_preExper.json")  # 获取模型的词汇列表
 
     # 取字典前 num_words 个键
@@ -103,4 +103,4 @@ def visualize_word_embeddings_after_training(trainer, num_words=936):
 
 
 if __name__ == '__main__':
-    visualize_word_embeddings_from_saved('/mnt/d/project/python/ARPN4ITS/Section3_PreExper/skip-gram/weights/skipgram_preExper', num_words=36)
+    visualize_word_embeddings_from_saved('/mnt/d/project/python/ARPN4ITS/Section3_PreExper/combined/weights/combined_preExper', num_words=36)
