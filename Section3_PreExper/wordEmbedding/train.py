@@ -109,7 +109,7 @@ def train(config):
     embedding_path = os.path.join(config["model_dir"], "skipgram_word_embeddings.npy")
     skipgram_embeddings = np.load(embedding_path)
     skipgram_embeddings = torch.tensor(skipgram_embeddings, dtype=torch.float32)
-    embedding_layer = nn.Embedding.from_pretrained(skipgram_embeddings, freeze=False)
+    embedding_layer = nn.Embedding.from_pretrained(skipgram_embeddings, freeze=True)
 
     model_class = get_model_class("cbow")
     model = model_class(vocab_size=len(vocab), skipgram_embeddings=embedding_layer)

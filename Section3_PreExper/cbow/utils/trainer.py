@@ -6,23 +6,23 @@ import torch
 
 class Trainer:
     """Main class for model training"""
-    
+
     def __init__(
-        self,
-        model,
-        epochs,
-        train_dataloader,
-        train_steps,
-        val_dataloader,
-        val_steps,
-        checkpoint_frequency,
-        criterion,
-        optimizer,
-        lr_scheduler,
-        device,
-        model_dir,
-        model_name,
-    ):  
+            self,
+            model,
+            epochs,
+            train_dataloader,
+            train_steps,
+            val_dataloader,
+            val_steps,
+            checkpoint_frequency,
+            criterion,
+            optimizer,
+            lr_scheduler,
+            device,
+            model_dir,
+            model_name,
+    ):
         self.model = model
         self.epochs = epochs
         self.train_dataloader = train_dataloader
@@ -41,20 +41,45 @@ class Trainer:
         self.model.to(self.device)
 
     def train(self):
-        for epoch in range(self.epochs):
-            self._train_epoch()
-            self._validate_epoch()
-            print(
-                "Epoch: {}/{}, Train Loss={:.5f}, Val Loss={:.5f}".format(
-                    epoch + 1,
-                    self.epochs,
-                    self.loss["train"][-1],
-                    self.loss["val"][-1],
-                )
-            )
+        """Train the model"""
 
+        # Initialize early stopping variables
+        best_val_loss = float('inf')  # Best validation loss seen so far
+        epochs_without_improvement = 0  # Counter for epochs without improvement
+        patience = 3  # Set the patience value (number of epochs without improvement before stopping)
+
+        for epoch in range(self.epochs):
+            # Training phase
+            self._train_epoch()
+
+            # Validation phase
+            self._validate_epoch()
+
+            # Get current validation loss
+            val_loss = self.loss['val'][-1]
+
+            # Print current epoch, training and validation losses
+            print(f"Epoch: {epoch + 1}/{self.epochs}, Train Loss={self.loss['train'][-1]:.5f}, Val Loss={val_loss:.5f}")
+
+            # Update learning rate scheduler
             self.lr_scheduler.step()
 
+            # Early stopping check
+            if val_loss < best_val_loss:
+                best_val_loss = val_loss
+                epochs_without_improvement = 0
+                # Save the model if validation loss improves
+                self.save_model()
+            else:
+                epochs_without_improvement += 1
+                print(f"Validation loss did not improve for {epochs_without_improvement} epoch(s).")
+
+            # Check if early stopping should be triggered
+            if epochs_without_improvement >= patience:
+                print(f"Early stopping: Validation loss did not improve for {patience} epochs.")
+                break
+
+            # Save checkpoint at specified frequency
             if self.checkpoint_frequency:
                 self._save_checkpoint(epoch)
 
@@ -81,6 +106,8 @@ class Trainer:
         epoch_loss = np.mean(running_loss)
         self.loss["train"].append(epoch_loss)
 
+        return epoch_loss
+
     def _validate_epoch(self):
         self.model.eval()
         running_loss = []
@@ -100,6 +127,8 @@ class Trainer:
 
         epoch_loss = np.mean(running_loss)
         self.loss["val"].append(epoch_loss)
+
+        return epoch_loss
 
     def _save_checkpoint(self, epoch):
         """Save model checkpoint to `self.model_dir` directory"""

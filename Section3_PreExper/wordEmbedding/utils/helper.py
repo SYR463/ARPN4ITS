@@ -4,7 +4,7 @@ import torch
 import torch.optim as optim
 from torch.optim.lr_scheduler import LambdaLR
 
-from index2vec.utils.model import CBOW_Only_Model, SkipGram_Only_Model
+from utils.model import CBOW_Only_Model, SkipGram_Only_Model
 
 
 def get_model_class(model_name: str):

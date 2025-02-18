@@ -13,7 +13,7 @@ from index2vec.utils.dataloader import load_vocab
 vocab_path = "/mnt/d/project/python/ARPN4ITS/vocab/vocab_preExper.json"
 tsne_output_path = "tsne_output.png"
 model_dir = "/mnt/d/project/python/ARPN4ITS/Section3_PreExper/wordEmbedding/weights/combined_preExper"
-
+pic_title = "t-SNE of Combined"
 
 def extract_word_embeddings(model):
     """
@@ -37,7 +37,7 @@ def tsne_embeddings(embeddings, n_components=2, random_state=42):
     reduced_embeddings = tsne.fit_transform(embeddings)
     return reduced_embeddings
 
-def plot_tsne_embeddings(reduced_embeddings, word_list, title="t-SNE of Combined", output_path=tsne_output_path):
+def plot_tsne_embeddings(reduced_embeddings, word_list, title=pic_title, output_path=tsne_output_path):
     """
     绘制t-SNE降维后的词向量
     :param reduced_embeddings: t-SNE降维后的二维词向量
@@ -53,11 +53,11 @@ def plot_tsne_embeddings(reduced_embeddings, word_list, title="t-SNE of Combined
 
     for word in word_list:
         if word in deep_brown_tokens:
-            colors.append('saddlebrown')  # 深棕色
+            colors.append((197/255, 90/255, 17/255))  # 深棕色
         elif word in dark_green_tokens:
-            colors.append('darkgreen')  # 墨绿色
+            colors.append((0/255, 188/255, 18/255))  # 墨绿色
         else:
-            colors.append((91/255, 155/255, 213/255))  # 浅蓝色
+            colors.append((180/255, 199/255, 231/255))  # 浅蓝色
 
     # 绘制散点图
     plt.scatter(reduced_embeddings[:, 0], reduced_embeddings[:, 1], c=colors, s=50, alpha=0.7)

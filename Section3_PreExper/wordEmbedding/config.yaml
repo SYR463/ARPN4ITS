@@ -10,7 +10,7 @@ shuffle: True
 
 optimizer: Adam
 learning_rate: 0.025
-epochs: 200
+epochs: 300
 train_steps: 
 val_steps: 
 

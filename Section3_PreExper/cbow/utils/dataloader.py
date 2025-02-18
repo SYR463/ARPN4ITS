@@ -126,7 +126,7 @@ def get_dataloader_and_vocab(model_name, data_dir, batch_size, shuffle, vocab=No
 
     # 加载单一文件
     # cbow_input, cbow_output, skipgram_input, skipgram_output = load_and_prepare_data(
-    #     os.path.join(data_dir, "tokens_vehicle_data_1118846987000_RTree.txt"), vocab)
+    #     os.path.join(data_dir, "test.txt"), vocab)
 
     # 批量加载文件：从文件夹中依次读取每个文件内容，并加载训练数据
     for file_name in os.listdir(data_dir):
@@ -201,17 +201,22 @@ def prepare_data(context_lines, vocab):
         # 将节点映射为词汇表中的索引
         nodes = [map_to_vocab(node, vocab) for node in nodes]
 
-        # 判断第一个token是否为<NL>，用于决定是使用Skip-Gram还是CBOW
-        if nodes[0] == vocab["<NL>"]:
-            # 使用Skip-Gram：用[<NL> C2 D3]预测[<L> C2 D3] 和 [<L> C2 E6]
-            for i in range(0, 3):
-                skipgram_input.append(nodes[i])  # 当前节点作为输入
-                skipgram_output.append(nodes[:i] + nodes[i + 1:])  # 上下文作为输出
-        elif nodes[0] == vocab["<L>"]:
-            # 使用CBOW：用[<L> C2 D3]预测[<NL> C2 D3]
-            for i in range(0, 3):
-                cbow_input.append(nodes[:i] + nodes[i + 1:])  # 上下文作为输入
-                cbow_output.append(nodes[i])  # 当前节点作为输出
+        # 该段内容为CBOW的训练过程，需要为所有的节点构建映射关系，而不区分<NL>或<L>
+        for i in range(0, 3):
+            cbow_input.append(nodes[:i] + nodes[i + 1:])  # 上下文作为输入
+            cbow_output.append(nodes[i])  # 当前节点作为输出
+
+        # # 判断第一个token是否为<NL>，用于决定是使用Skip-Gram还是CBOW
+        # if nodes[0] == vocab["<NL>"]:
+        #     # 使用Skip-Gram：用[<NL> C2 D3]预测[<L> C2 D3] 和 [<L> C2 E6]
+        #     for i in range(0, 3):
+        #         skipgram_input.append(nodes[i])  # 当前节点作为输入
+        #         skipgram_output.append(nodes[:i] + nodes[i + 1:])  # 上下文作为输出
+        # elif nodes[0] == vocab["<L>"]:
+        #     # 使用CBOW：用[<L> C2 D3]预测[<NL> C2 D3]
+        #     for i in range(0, 3):
+        #         cbow_input.append(nodes[:i] + nodes[i + 1:])  # 上下文作为输入
+        #         cbow_output.append(nodes[i])  # 当前节点作为输出
 
     return cbow_input, cbow_output, skipgram_input, skipgram_output
 
@@ -269,15 +274,15 @@ def save_prepared_data(cbow_input, cbow_output, skipgram_input, skipgram_output,
 
 # if __name__ == '__main__':
 #     # 设置词汇表和上下文数据文件路径
-#     vocab = load_vocab('../../../vocab/vocab.json')
-#     context_file_path = "../../../dataPreprocess/outputRTreeTokenContext/tokens_vehicle_data_1118846987000_RTree.txt"  # 上下文文件路径
+#     vocab = load_vocab('../../../vocab/vocab_preExper.json')
+#     context_file_path = "/mnt/d/project/Java/rtree_construct/preExperData/RTreeTokenContext/test.txt"  # 上下文文件路径
 #     output_dir = "../dataset"  # 输出文件夹
-#
-#     # 读取数据并准备训练数据
-#     cbow_input, cbow_output, skipgram_input, skipgram_output = load_and_prepare_data(context_file_path, vocab)
-#
-#     # 保存准备好的数据
-#     save_prepared_data(cbow_input, cbow_output, skipgram_input, skipgram_output, output_dir)
+
+    # 读取数据并准备训练数据
+    cbow_input, cbow_output, skipgram_input, skipgram_output = load_and_prepare_data(context_file_path, vocab)
+
+    # 保存准备好的数据
+    save_prepared_data(cbow_input, cbow_output, skipgram_input, skipgram_output, output_dir)
 #
 # if __name__ == '__main1__':
 #     # 加载词汇表
