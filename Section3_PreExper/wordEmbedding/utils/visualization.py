@@ -10,6 +10,10 @@ from sklearn.preprocessing import LabelEncoder
 
 from index2vec.utils.dataloader import load_vocab
 
+vocab_path = "/mnt/d/project/python/ARPN4ITS/vocab/vocab_preExper.json"
+tsne_output_path = "tsne_output.png"
+model_dir = "/mnt/d/project/python/ARPN4ITS/Section3_PreExper/wordEmbedding/weights/combined_preExper"
+
 
 def extract_word_embeddings(model):
     """
@@ -33,35 +37,41 @@ def tsne_embeddings(embeddings, n_components=2, random_state=42):
     reduced_embeddings = tsne.fit_transform(embeddings)
     return reduced_embeddings
 
-
-def plot_tsne_embeddings(reduced_embeddings, word_list, labels=None, title="t-SNE of Word Embeddings", output_path="tsne_output.png"):
+def plot_tsne_embeddings(reduced_embeddings, word_list, title="t-SNE of Combined", output_path=tsne_output_path):
     """
     绘制t-SNE降维后的词向量
     :param reduced_embeddings: t-SNE降维后的二维词向量
     :param word_list: 词汇列表
-    :param labels: 词汇的标签或类别（可选）
     :param title: 图标题
     """
     plt.figure(figsize=(12, 8))
 
-    if labels is None:
-        plt.scatter(reduced_embeddings[:, 0], reduced_embeddings[:, 1])
-    else:
-        le = LabelEncoder()
-        labels_encoded = le.fit_transform(labels)
-        sns.scatterplot(x=reduced_embeddings[:, 0], y=reduced_embeddings[:, 1], hue=labels_encoded, palette="viridis",
-                        legend="full")
+    # 为每个词汇分配颜色
+    colors = []
+    deep_brown_tokens = {"A3", "E5", "D4", "B4"}  # 深棕色token集合
+    dark_green_tokens = {"B0", "E3", "C2", "D3", "B1", "C2", "D0", "E1"}  # 墨绿色token集合
 
+    for word in word_list:
+        if word in deep_brown_tokens:
+            colors.append('saddlebrown')  # 深棕色
+        elif word in dark_green_tokens:
+            colors.append('darkgreen')  # 墨绿色
+        else:
+            colors.append((91/255, 155/255, 213/255))  # 浅蓝色
+
+    # 绘制散点图
+    plt.scatter(reduced_embeddings[:, 0], reduced_embeddings[:, 1], c=colors, s=50, alpha=0.7)
+
+    # 添加词汇标签
     for i, word in enumerate(word_list):
         plt.annotate(word, (reduced_embeddings[i, 0], reduced_embeddings[i, 1]), fontsize=10, alpha=0.7)
 
     plt.title(title)
 
     # # 设置x轴和y轴的显示范围，调整这部分以只聚焦中心区域
-    plt.xlim([-1.3, -0.95])  # 调整为适合的x轴范围
-    plt.ylim([-5.3, -4.9])  # 调整为适合的y轴范围
+    # plt.xlim([-1.5, -1.15])  # 调整为适合的x轴范围
+    # plt.ylim([-2.1, -1.6])  # 调整为适合的y轴范围
 
-    # 保存图片
     plt.savefig(output_path)
     plt.close()  # 关闭图形，以释放内存
 
@@ -69,10 +79,11 @@ def plot_tsne_embeddings(reduced_embeddings, word_list, labels=None, title="t-SN
 
 
 
+
 def visualize_word_embeddings_from_saved(model_dir, num_words=36):
     # 加载保存的词嵌入和词汇表
-    embeddings = np.load(os.path.join(model_dir, "word_embeddings.npy"))
-    word_list = load_vocab("/mnt/d/project/python/ARPN4ITS/vocab/vocab_preExper.json")  # 获取模型的词汇列表
+    embeddings = np.load(os.path.join(model_dir, "cbow_word_embeddings.npy"))
+    word_list = load_vocab(vocab_path)  # 获取模型的词汇列表
 
     # 取字典前 num_words 个键
     word_list = list(word_list.keys())[:num_words]  # 仅取前 num_words 个词
@@ -89,8 +100,8 @@ def visualize_word_embeddings_after_training(trainer, num_words=936):
     # 提取模型训练后的词嵌入
     embeddings = extract_word_embeddings(trainer.model)
 
-    # 假设你有一个词汇表 word_list
-    word_list = load_vocab("/mnt/d/project/python/ARPN4ITS/vocab/vocab.json")  # 获取模型的词汇列表
+    # 词汇表 word_list
+    word_list = load_vocab(vocab_path)  # 获取模型的词汇列表
 
     # 取字典前 num_words 个键
     word_list = list(word_list.keys())[:num_words]  # 仅取前 num_words 个词
@@ -103,4 +114,4 @@ def visualize_word_embeddings_after_training(trainer, num_words=936):
 
 
 if __name__ == '__main__':
-    visualize_word_embeddings_from_saved('/mnt/d/project/python/ARPN4ITS/Section3_PreExper/cbow/weights/cbow_preExper', num_words=36)
+    visualize_word_embeddings_from_saved(model_dir, num_words=36)
