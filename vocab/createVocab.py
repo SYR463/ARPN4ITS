@@ -36,11 +36,17 @@ def create_MBR_vocab(vocab, M, N):
     :param vocab: 空词汇表
     :return: MBR词汇表
     """
-    word = ""
-    for i in range(N):
-        for j in range(M):
-            word = num_to_alpha(i) + str(j)
-            vocab.append(word)
+
+
+    for x1 in range(N):
+        for x2 in range(x1+1, N):
+            for(y1) in range(M):
+                for(y2) in range(y1+1, M):
+                    word = num_to_alpha(x1) + str(y1) +num_to_alpha(x2) + str(y2)
+                    leafWord = '<L>' + word
+                    nonLeafWord = '<NL>' + word
+                    vocab.append(leafWord)
+                    vocab.append(nonLeafWord)
     return vocab
 
 
@@ -55,13 +61,13 @@ if __name__ == '__main__':
     vocab = []
     vocab = create_MBR_vocab(vocab, M, N)
     # 添加其他特殊标记（节点类型标记 以及 特殊标记）
-    vocab = ["<UNK>", "<L>", "<NL>", "<BEG>", "<END>", "<S>"] + vocab
+    vocab = ["<UNK>", "<BEG>", "<END>", "<NL><S>", "<L><S>"] + vocab
 
     # 词到索引映射
     word_to_index = {}
 
     # 为特殊标记分配索引 1 到 6
-    special_tokens = ["<UNK>", "<L>", "<NL>", "<BEG>", "<END>", "<S>"]
+    special_tokens = ["<UNK>", "<BEG>", "<END>", "<NL><S>", "<L><S>"]
     for idx, token in enumerate(special_tokens, start=0):
         word_to_index[token] = idx
 
@@ -69,7 +75,7 @@ if __name__ == '__main__':
     # for idx, word in enumerate(vocab[6:], start=17):  # 忽略前6个特殊标记
     #     word_to_index[word] = idx
 
-    for idx, word in enumerate(vocab[6:], start=6):  # 忽略前6个特殊标记
+    for idx, word in enumerate(vocab[5:], start=5):  # 忽略前5个特殊标记
         word_to_index[word] = idx
 
     # 保存词汇表
