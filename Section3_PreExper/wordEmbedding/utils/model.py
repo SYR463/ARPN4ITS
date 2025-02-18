@@ -1,16 +1,16 @@
 import torch.nn as nn
 
-from index2vec.utils.constants import EMBED_DIMENSION, EMBED_MAX_NORM
+from utils.constants import EMBED_DIMENSION, EMBED_MAX_NORM
 
 
-class CBOW_Only_Model(nn.Module):
+class CBOW_Model(nn.Module):
     """
     Implementation of CBOW model described in paper:
     https://arxiv.org/abs/1301.3781
     """
 
     def __init__(self, vocab_size: int, skipgram_embeddings=None):
-        super(CBOW_Only_Model, self).__init__()
+        super(CBOW_Model, self).__init__()
 
         # 如果提供了Skip-Gram的嵌入，则使用它初始化CBOW的嵌入层
         if skipgram_embeddings is not None:
@@ -37,13 +37,13 @@ class CBOW_Only_Model(nn.Module):
         return x
 
 
-class SkipGram_Only_Model(nn.Module):
+class SkipGram_Model(nn.Module):
     """
     Implementation of Skip-Gram model described in paper:
     https://arxiv.org/abs/1301.3781
     """
     def __init__(self, vocab_size: int):
-        super(SkipGram_Only_Model, self).__init__()
+        super(SkipGram_Model, self).__init__()
         self.embeddings = nn.Embedding(
             num_embeddings=vocab_size,
             embedding_dim=EMBED_DIMENSION,

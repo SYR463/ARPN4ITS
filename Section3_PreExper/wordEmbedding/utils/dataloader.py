@@ -133,7 +133,8 @@ def get_dataloader_and_vocab(model_name, data_dir, batch_size, shuffle, vocab=No
         file_path = os.path.join(data_dir, file_name)
         if os.path.isfile(file_path):
             # 加载数据并准备CBOW和Skip-Gram输入输出
-            file_cbow_input, file_cbow_output, file_skipgram_input, file_skipgram_output = load_and_prepare_data(file_path, vocab)
+            file_cbow_input, file_cbow_output, file_skipgram_input, file_skipgram_output \
+                = load_and_prepare_data(model_name, file_path, vocab)
             cbow_input.extend(file_cbow_input)
             cbow_output.extend(file_cbow_output)
             skipgram_input.extend(file_skipgram_input)
@@ -146,6 +147,9 @@ def get_dataloader_and_vocab(model_name, data_dir, batch_size, shuffle, vocab=No
     elif model_name == "skipgram":
         dataset = SkipGramDataset(skipgram_input, skipgram_output)
         collate_fn = collate_skipgram
+    elif model_name == "combined":
+        dataset_CBOW = CBOWDataset(cbow_input, cbow_output)
+        dataset_SkipGram = SkipGramDataset(skipgram_input, skipgram_output)
     else:
         raise ValueError("Choose model from: cbow, skipgram")
 
@@ -233,7 +237,7 @@ def prepare_data_all(context_lines, vocab):
     return cbow_input, cbow_output, skipgram_input, skipgram_output
 
 
-def load_and_prepare_data(file_path, vocab):
+def load_and_prepare_data(model_name, file_path, vocab):
     """
     从文件中读取节点上下文，并生成训练数据。
     :param file_path: 上下文数据文件路径
@@ -245,8 +249,15 @@ def load_and_prepare_data(file_path, vocab):
     with open(file_path, "r") as file:
         context_lines = file.readlines()
 
-    # 生成训练样本
-    cbow_input, cbow_output, skipgram_input, skipgram_output = prepare_data(context_lines, vocab)
+    # 生成训练样本：
+    # 如果模型是 CBOW 或者 SkipGram，那么需要映射所有的节点
+    # 如果模型是 Combined，那么需要划分叶节点与非叶节点，为其创建不同的数据集
+    if model_name == "cbow" or model_name == "skipgram":
+        cbow_input, cbow_output, skipgram_input, skipgram_output \
+            = prepare_data_all(context_lines, vocab)
+    else:
+        cbow_input, cbow_output, skipgram_input, skipgram_output \
+            = prepare_data(context_lines, vocab)
 
     return cbow_input, cbow_output, skipgram_input, skipgram_output
 

@@ -4,16 +4,14 @@ import torch
 import torch.optim as optim
 from torch.optim.lr_scheduler import LambdaLR
 
-from utils.model import CBOW_Only_Model, SkipGram_Only_Model
+from utils.model import CBOW_Model, SkipGram_Model
 
 
 def get_model_class(model_name: str):
     if model_name == "cbow":
-        return CBOW_Only_Model
+        return CBOW_Model
     elif model_name == "skipgram":
-        return SkipGram_Only_Model
-    elif model_name == "combined":
-        return CBOW_Only_Model
+        return SkipGram_Model
     else:
         raise ValueError("Choose model_name from: cbow, skipgram")
         return

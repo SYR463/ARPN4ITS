@@ -7,7 +7,6 @@ import torch
 import torch.nn as nn
 from torch.utils.data import DataLoader
 
-from index2vec.utils.visualization import visualize_word_embeddings_after_training
 from utils.dataloader import get_dataloader_and_vocab
 from utils.trainer import Trainer
 from utils.helper import (
@@ -31,7 +30,7 @@ def train(config):
     )
 
     val_dataloader, _ = get_dataloader_and_vocab(
-        model_name="skipgram",
+        model_name=config["model_name"],
         # ds_name=config["dataset"],
         # ds_type="valid",
         data_dir=config["data_dir"],

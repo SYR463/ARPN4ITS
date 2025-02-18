@@ -114,8 +114,8 @@ def process_files(input_folder, output_folder):
 if __name__ == '__main1__':
     # 示例树形结构文本
     text = """
-    <NL> C2     D3
-      <L> C2 D3
+    <NL>C2D3
+      <L>C2D3
     """
 
     # 解析树形结构
@@ -124,7 +124,8 @@ if __name__ == '__main1__':
     # 查找并打印某一节点的上下文信息
     for node in parsed_tree:
         # 这里示范打印每个节点的信息，可以指定某个节点来查看
-        print_node_context_info(node)
+        res = print_node_context_info(node)
+        print(res)
 
 
 # 测试用例，从文件读取
