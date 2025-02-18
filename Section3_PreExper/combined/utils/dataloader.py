@@ -139,18 +139,12 @@ def get_dataloader_and_vocab(model_name, data_dir, batch_size, shuffle, vocab=No
             skipgram_input.extend(file_skipgram_input)
             skipgram_output.extend(file_skipgram_output)
 
-    # 创建自定义数据集
+    # 创建自定义数据集，根据模型类型选择合适的 collate_fn
     if model_name == "cbow":
         dataset = CBOWDataset(cbow_input, cbow_output)
-    elif model_name == "skipgram":
-        dataset = SkipGramDataset(skipgram_input, skipgram_output)
-    else:
-        raise ValueError("Choose model from: cbow, skipgram")
-
-    # 根据模型类型选择合适的 collate_fn
-    if model_name == "cbow":
         collate_fn = collate_cbow
     elif model_name == "skipgram":
+        dataset = SkipGramDataset(skipgram_input, skipgram_output)
         collate_fn = collate_skipgram
     else:
         raise ValueError("Choose model from: cbow, skipgram")
@@ -190,10 +184,7 @@ def prepare_data(context_lines, vocab):
     :param vocab: 词汇表
     :return: CBOW或Skip-Gram的输入输出样本
     """
-    cbow_input = []
-    cbow_output = []
-    skipgram_input = []
-    skipgram_output = []
+    cbow_input, cbow_output, skipgram_input, skipgram_output = [], [], [], []
 
     for line in context_lines:
         nodes = line.strip().split(" ")
@@ -212,6 +203,32 @@ def prepare_data(context_lines, vocab):
             for i in range(0, 3):
                 cbow_input.append(nodes[:i] + nodes[i + 1:])  # 上下文作为输入
                 cbow_output.append(nodes[i])  # 当前节点作为输出
+
+    return cbow_input, cbow_output, skipgram_input, skipgram_output
+
+
+def prepare_data_all(context_lines, vocab):
+    """
+    根据上下文生成CBOW或Skip-Gram模型的输入输出样本。
+    :param context_lines: 节点上下文数据，每行格式如：<NL> B3 D6 <L> B3 C4 <L> C5 D6
+    :param vocab: 词汇表
+    :return: CBOW或Skip-Gram的输入输出样本
+    """
+
+    cbow_input, cbow_output, skipgram_input, skipgram_output = [], [], [], []
+
+    for line in context_lines:
+        nodes = line.strip().split(" ")
+
+        # 将节点映射为词汇表中的索引
+        nodes = [map_to_vocab(node, vocab) for node in nodes]
+
+        # 构建Skip-Gram以及CBOW数据集
+        for i in range(0, 3):
+            skipgram_input.append(nodes[i])  # 当前节点作为输入
+            skipgram_output.append(nodes[:i] + nodes[i + 1:])  # 上下文作为输出
+            cbow_input.append(nodes[:i] + nodes[i + 1:])  # 上下文作为输入
+            cbow_output.append(nodes[i])  # 当前节点作为输出
 
     return cbow_input, cbow_output, skipgram_input, skipgram_output
 
@@ -287,3 +304,12 @@ def save_prepared_data(cbow_input, cbow_output, skipgram_input, skipgram_output,
 #     index = map_to_vocab(node, vocab)
 #
 #     print(f"The index of node '{node}' is: {index}")
+
+
+if __name__ == '__main__':
+    context_lines = """
+    <NL> B2 D4 <L> B2 C3 <L> C3 D4
+    <L> B2 C3 <NL> B2 D4 <L> C3 D4
+    <L> C3 D4 <NL> B2 D4 <L> B2 C3
+    """;
+    prepare_data_all(context_lines=context_lines, vocab=load_vocab("/mnt/d/project/python/ARPN4ITS/vocab/vocab_preExper.json"));

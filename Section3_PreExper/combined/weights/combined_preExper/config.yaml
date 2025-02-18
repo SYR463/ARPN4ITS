@@ -1,0 +1,13 @@
+checkpoint_frequency: null
+data_dir: /mnt/d/project/Java/rtree_construct/preExperData/RTreeTokenContext
+dataset: WikiText2
+epochs: 300
+learning_rate: 0.025
+model_dir: weights/combined_preExper
+model_name: combined
+optimizer: Adam
+shuffle: true
+train_batch_size: 96
+train_steps: null
+val_batch_size: 96
+val_steps: null

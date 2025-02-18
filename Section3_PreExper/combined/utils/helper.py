@@ -4,7 +4,7 @@ import torch
 import torch.optim as optim
 from torch.optim.lr_scheduler import LambdaLR
 
-from index2vec.utils.model import CBOW_Only_Model, SkipGram_Only_Model, Combined_Model
+from utils.model import CBOW_Only_Model, SkipGram_Only_Model
 
 
 def get_model_class(model_name: str):
@@ -12,8 +12,8 @@ def get_model_class(model_name: str):
         return CBOW_Only_Model
     elif model_name == "skipgram":
         return SkipGram_Only_Model
-    elif model_name == "combine":
-        return Combined_Model
+    elif model_name == "combined":
+        return CBOW_Only_Model
     else:
         raise ValueError("Choose model_name from: cbow, skipgram")
         return
@@ -27,13 +27,13 @@ def get_optimizer_class(name: str):
         return
     
 
-def get_lr_scheduler(optimizer, total_epochs: int, verbose: bool = True):
+def get_lr_scheduler(optimizer, total_epochs: int):
     """
     Scheduler to linearly decrease learning rate, 
-    so thatlearning rate after the last epoch is 0.
+    so that learning rate after the last epoch is 0.
     """
     lr_lambda = lambda epoch: (total_epochs - epoch) / total_epochs
-    lr_scheduler = LambdaLR(optimizer, lr_lambda=lr_lambda, verbose=verbose)
+    lr_scheduler = LambdaLR(optimizer, lr_lambda=lr_lambda)
     return lr_scheduler
 
 

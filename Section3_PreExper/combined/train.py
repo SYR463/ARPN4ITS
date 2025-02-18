@@ -18,8 +18,8 @@ from utils.helper import (
     save_vocab,
 )
 
-def train(config):
 
+def train(config):
     # 阶段1：使用Skip-Gram训练非叶节点
     train_dataloader, vocab = get_dataloader_and_vocab(
         model_name="skipgram",
@@ -45,12 +45,10 @@ def train(config):
 
     criterion = nn.CrossEntropyLoss()
     optimizer = torch.optim.SGD(model.parameters(), lr=config["learning_rate"])
-    lr_scheduler = get_lr_scheduler(optimizer, config["epochs"], verbose=True)
-
+    lr_scheduler = get_lr_scheduler(optimizer, config["epochs"])
 
     # device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     device = "cpu"
-
 
     trainer = Trainer(
         model=model,
@@ -83,6 +81,9 @@ def train(config):
 
     print("Model artifacts saved to folder:", config["model_dir"])
 
+    print("--------------------------------------")
+    print()
+
     # 阶段2：使用CBOW训练叶节点
 
     train_dataloader, vocab = get_dataloader_and_vocab(
@@ -104,12 +105,18 @@ def train(config):
         # vocab=vocab,
     )
 
+    # 加载 Skip-Gram 训练完成后的 embedding 参数
+    embedding_path = os.path.join(config["model_dir"], "skipgram_word_embeddings.npy")
+    skipgram_embeddings = np.load(embedding_path)
+    skipgram_embeddings = torch.tensor(skipgram_embeddings, dtype=torch.float32)
+    embedding_layer = nn.Embedding.from_pretrained(skipgram_embeddings, freeze=True)
+
     model_class = get_model_class("cbow")
-    model = model_class(vocab_size=len(vocab))
+    model = model_class(vocab_size=len(vocab), skipgram_embeddings=embedding_layer)
 
     criterion = nn.CrossEntropyLoss()
     optimizer = torch.optim.SGD(model.parameters(), lr=config["learning_rate"])
-    lr_scheduler = get_lr_scheduler(optimizer, config["epochs"], verbose=True)
+    lr_scheduler = get_lr_scheduler(optimizer, config["epochs"])
 
     trainer = Trainer(
         model=model,
