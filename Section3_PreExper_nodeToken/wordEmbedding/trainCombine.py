@@ -19,6 +19,8 @@ from utils.helper import (
 
 
 def train(config):
+    os.makedirs(config["model_dir"])
+
     # 阶段1：使用Skip-Gram训练非叶节点
     model_name = "skipgram"
     vocab = load_vocab("/mnt/d/project/python/ARPN4ITS/vocab/vocab_preExper.json")  # 加载词汇表
@@ -26,7 +28,7 @@ def train(config):
     train_dataloader = get_dataloader(
         model_name=model_name,
         vocab=vocab,
-        data_dir=config["data_dir"],
+        data_dir=config["train_data_dir"],
         # data_dir=config["data_dir_non_leaf"],
         batch_size=config["train_batch_size"],
         shuffle=config["shuffle"],
@@ -38,7 +40,7 @@ def train(config):
         vocab=vocab,
         # ds_name=config["dataset"],
         # ds_type="valid",
-        data_dir=config["data_dir"],
+        data_dir=config["val_data_dir"],
         batch_size=config["val_batch_size"],
         shuffle=config["shuffle"],
         filter=config['filter'],
@@ -51,8 +53,8 @@ def train(config):
     optimizer = torch.optim.SGD(model.parameters(), lr=config["learning_rate"])
     lr_scheduler = get_lr_scheduler(optimizer, config["epochs"])
 
-    # device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-    device = "cpu"
+    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+    # device = "cpu"
 
     trainer = Trainer(
         model=model,
@@ -95,7 +97,7 @@ def train(config):
     train_dataloader = get_dataloader(
         model_name=model_name,
         vocab=vocab,
-        data_dir=config["data_dir"],
+        data_dir=config["train_data_dir"],
         # data_dir=config["data_dir_non_leaf"],
         batch_size=config["train_batch_size"],
         shuffle=config["shuffle"],
@@ -107,7 +109,7 @@ def train(config):
         vocab=vocab,
         # ds_name=config["dataset"],
         # ds_type="valid",
-        data_dir=config["data_dir"],
+        data_dir=config["val_data_dir"],
         batch_size=config["val_batch_size"],
         shuffle=config["shuffle"],
         filter=config['filter'],
@@ -118,7 +120,7 @@ def train(config):
     skipgram_embeddings = np.load(embedding_path)
     skipgram_embeddings = torch.tensor(skipgram_embeddings, dtype=torch.float32)
     # freeze=True 冻结Skip-Gram的参数，不进行更新
-    embedding_layer = nn.Embedding.from_pretrained(skipgram_embeddings, freeze=True)
+    embedding_layer = nn.Embedding.from_pretrained(skipgram_embeddings, freeze=False)
 
     model_class = get_model_class(model_name)
     model = model_class(vocab_size=len(vocab), skipgram_embeddings=embedding_layer)

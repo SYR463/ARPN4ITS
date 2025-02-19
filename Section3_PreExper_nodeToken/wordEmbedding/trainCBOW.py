@@ -20,6 +20,8 @@ from utils.helper import (
 
 # 使用Skip-Gram训练
 def train(config):
+    os.makedirs(config["model_dir"])
+
     vocab = load_vocab("/mnt/d/project/python/ARPN4ITS/vocab/vocab_preExper.json")  # 加载词汇表
 
     train_dataloader = get_dataloader(

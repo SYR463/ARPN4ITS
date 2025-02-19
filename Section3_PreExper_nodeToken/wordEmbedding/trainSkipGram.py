@@ -20,12 +20,14 @@ from utils.helper import (
 
 # 使用Skip-Gram训练
 def train(config):
+    os.makedirs(config["model_dir"])
+
     vocab = load_vocab("/mnt/d/project/python/ARPN4ITS/vocab/vocab_preExper.json")  # 加载词汇表
 
     train_dataloader = get_dataloader(
         model_name=config["model_name"],
         vocab=vocab,
-        data_dir=config["data_dir"],
+        data_dir=config["train_data_dir"],
         # data_dir=config["data_dir_non_leaf"],
         batch_size=config["train_batch_size"],
         shuffle=config["shuffle"],
@@ -37,7 +39,7 @@ def train(config):
         vocab=vocab,
         # ds_name=config["dataset"],
         # ds_type="valid",
-        data_dir=config["data_dir"],
+        data_dir=config["val_data_dir"],
         batch_size=config["val_batch_size"],
         shuffle=config["shuffle"],
         filter=config['filter'],
@@ -50,8 +52,8 @@ def train(config):
     optimizer = torch.optim.SGD(model.parameters(), lr=config["learning_rate"])
     lr_scheduler = get_lr_scheduler(optimizer, config["epochs"])
 
-    # device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-    device = "cpu"
+    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+    # device = "cpu"
 
     trainer = Trainer(
         model=model,

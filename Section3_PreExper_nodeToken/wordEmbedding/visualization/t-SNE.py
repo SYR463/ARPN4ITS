@@ -7,16 +7,17 @@ from sklearn.manifold import TSNE
 import matplotlib.pyplot as plt
 import seaborn as sns
 from sklearn.preprocessing import LabelEncoder
+import time
 
 from Section3_PreExper_nodeToken.wordEmbedding.utils.dataloader import load_vocab
 
 # model_name: cbow, skipgram, combined
-model_name = "skipgram"
+model_name = "combined"
 
+time = time.strftime("%m%d%H%M", time.localtime())
 vocab_path = "/mnt/d/project/python/ARPN4ITS/vocab/vocab_preExper.json"
-tsne_output_path = f"{model_name}_tsne_output.png"
+tsne_output_path = f"{model_name}_tsne_output_{time}.png"
 model_dir = f"/mnt/d/project/python/ARPN4ITS/Section3_PreExper_nodeToken/wordEmbedding/weights/{model_name}_preExper"
-
 pic_title = f"t-SNE of {model_name}"
 
 def extract_word_embeddings(model):
@@ -50,16 +51,45 @@ def plot_tsne_embeddings(reduced_embeddings, word_list, title=pic_title, output_
     """
     plt.figure(figsize=(12, 8))
 
+    # # 为每个词汇分配颜色
+    # colors = []
+    # deep_brown_tokens = {"<NL>A3E5", "<L>D4E5", "<L>A3B4"}  # 深棕色token集合
+    # dark_green_tokens = {"<NL>B0E3", "<L>C2D3", "<L>B1C2", "<L>D0E1"}  # 墨绿色token集合
+
+    """
+    <NL>A0D5
+      <NL>A0D2
+        <L>A0B1
+        <L>C0D1
+        <L>C1D2
+      <NL>A3D5
+        <L>B3C4
+        <L>A4B5
+        <L>C4D5
+    """
+
+    # 为每个词汇分配颜色
+    # colors = []
+    # deep_brown_tokens = {"<NL>A0D2", "<L>A0B1", "<L>C0D1", "<L>C1D2"}  # 深棕色token集合
+    # dark_green_tokens = {"<NL>A3D5", "<L>B3C4", "<L>A4B5", "<L>C4D5"}  # 墨绿色token集合
+
     # 为每个词汇分配颜色
     colors = []
-    deep_brown_tokens = {"<NL>A3E5", "<L>D4E5", "<L>A3B4"}  # 深棕色token集合
-    dark_green_tokens = {"<NL>B0E3", "<L>C2D3", "<L>B1C2", "<L>D0E1"}  # 墨绿色token集合
+    black_tokens = {"<NL>A2E5"}
+    deep_brown_tokens = {"<NL>B4D5", "<L>B4C5", "<L>C4D5"}  # 深棕色token集合
+    dark_green_tokens = {"<NL>A2C3", "<L>A2B3", "<L>B2C3"}  # 墨绿色token集合
+    orange_tokens = {"<NL>B3E4", "<L>B3C4", "<L>D3E4"}
+
 
     for word in word_list:
         if word in deep_brown_tokens:
             colors.append((197/255, 90/255, 17/255))  # 深棕色
         elif word in dark_green_tokens:
             colors.append((0/255, 188/255, 18/255))  # 墨绿色
+        elif word in black_tokens:
+            colors.append('black')  # 墨绿色
+        elif word in orange_tokens:
+            colors.append('orange')  # 墨绿色
         else:
             colors.append((180/255, 199/255, 231/255))  # 浅蓝色
 

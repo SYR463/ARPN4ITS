@@ -126,7 +126,7 @@ def process_files(input_folder, output_folder):
 
 
 # 测试用例
-if __name__ == '__main__':
+if __name__ == '__main1__':
     # 示例树形结构文本
     text = """
     <NL>C2D3
@@ -144,10 +144,15 @@ if __name__ == '__main__':
 
 
 # 测试用例，从文件读取
-if __name__ == '__main1__':
+if __name__ == '__main__':
     # 输入和输出文件夹路径
     input_folder = "/mnt/d/project/Java/rtree_construct/preExperData/RTreeToken"
     output_folder = "/mnt/d/project/Java/rtree_construct/preExperData/RTreeTokenContext"
 
+    # # 用于构建两个相同的 R_tree 结构，并用于 Index2Vec 部分的预实验，验证所提出方法的可行性与有效性
+    # input_folder = "/mnt/d/project/Java/rtree_construct/preExperData/testDataset/RTreeToken/"
+    # output_folder = "/mnt/d/project/Java/rtree_construct/preExperData/testDataset/RTreeTokenContext/"
+
     # 执行文件处理
     process_files(input_folder, output_folder)
+
