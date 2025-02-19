@@ -10,10 +10,14 @@ from sklearn.preprocessing import LabelEncoder
 
 from Section3_PreExper_nodeToken.wordEmbedding.utils.dataloader import load_vocab
 
+# model_name: cbow, skipgram, combined
+model_name = "skipgram"
+
 vocab_path = "/mnt/d/project/python/ARPN4ITS/vocab/vocab_preExper.json"
-tsne_output_path = "tsne_output.png"
-model_dir = "/mnt/d/project/python/ARPN4ITS/Section3_PreExper/cbow/weights/cbow_preExper"
-pic_title = "t-SNE of CBOW"
+tsne_output_path = f"{model_name}_tsne_output.png"
+model_dir = f"/mnt/d/project/python/ARPN4ITS/Section3_PreExper_nodeToken/wordEmbedding/weights/{model_name}_preExper"
+
+pic_title = f"t-SNE of {model_name}"
 
 def extract_word_embeddings(model):
     """
@@ -48,8 +52,8 @@ def plot_tsne_embeddings(reduced_embeddings, word_list, title=pic_title, output_
 
     # 为每个词汇分配颜色
     colors = []
-    deep_brown_tokens = {"A3", "E5", "D4", "B4"}  # 深棕色token集合
-    dark_green_tokens = {"B0", "E3", "C2", "D3", "B1", "C2", "D0", "E1"}  # 墨绿色token集合
+    deep_brown_tokens = {"<NL>A3E5", "<L>D4E5", "<L>A3B4"}  # 深棕色token集合
+    dark_green_tokens = {"<NL>B0E3", "<L>C2D3", "<L>B1C2", "<L>D0E1"}  # 墨绿色token集合
 
     for word in word_list:
         if word in deep_brown_tokens:
@@ -61,10 +65,17 @@ def plot_tsne_embeddings(reduced_embeddings, word_list, title=pic_title, output_
 
     # 绘制散点图
     plt.scatter(reduced_embeddings[:, 0], reduced_embeddings[:, 1], c=colors, s=50, alpha=0.7)
+    # plt.scatter(reduced_embeddings[:, 0], reduced_embeddings[:, 1], s=50, alpha=0.7)
 
-    # 添加词汇标签
+    # # 添加词汇标签
+    # for i, word in enumerate(word_list):
+    #     plt.annotate(word, (reduced_embeddings[i, 0], reduced_embeddings[i, 1]), fontsize=10, alpha=0.7)
+
+    # 添加标签（只为深棕色和墨绿色token显示标签）
     for i, word in enumerate(word_list):
-        plt.annotate(word, (reduced_embeddings[i, 0], reduced_embeddings[i, 1]), fontsize=10, alpha=0.7)
+        if word in deep_brown_tokens or word in dark_green_tokens:
+            plt.annotate(word, (reduced_embeddings[i, 0], reduced_embeddings[i, 1]), fontsize=10, alpha=0.7)
+
 
     plt.title(title)
 
@@ -80,7 +91,7 @@ def plot_tsne_embeddings(reduced_embeddings, word_list, title=pic_title, output_
 
 
 
-def visualize_word_embeddings_from_saved(model_dir, num_words=36):
+def visualize_word_embeddings_from_saved(model_dir, num_words=1000):
     # 加载保存的词嵌入和词汇表
     embeddings = np.load(os.path.join(model_dir, "word_embeddings.npy"))
     word_list = load_vocab(vocab_path)  # 获取模型的词汇列表
@@ -114,4 +125,4 @@ def visualize_word_embeddings_after_training(trainer, num_words=936):
 
 
 if __name__ == '__main__':
-    visualize_word_embeddings_from_saved(model_dir, num_words=36)
+    visualize_word_embeddings_from_saved(model_dir, num_words=1000)
