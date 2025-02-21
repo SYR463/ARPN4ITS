@@ -1,5 +1,6 @@
 """
 利用之前构建得到的 R-tree Token，得到每个节点的上下文序列
+提取上下文序列：当前节点的 父节点、 子节点
 
 例如：
 
@@ -71,11 +72,11 @@ def print_node_info(node):
 def print_node_context_info(node):
     # 提取父节点、兄弟节点和子节点的值
     parent_line = node['parent']['line'] if 'parent' in node else None
-    siblings_lines = [sibling['line'] for sibling in node['siblings']] if node['siblings'] else []
+    # siblings_lines = [sibling['line'] for sibling in node['siblings']] if node['siblings'] else []
     children_lines = [child['line'] for child in node['children']] if node['children'] else []
 
     # 兄弟节点和子节点，去掉空节点
-    siblings_str = " ".join(siblings_lines) if siblings_lines else ""
+    # siblings_str = " ".join(siblings_lines) if siblings_lines else ""
     children_str = " ".join(children_lines) if children_lines else ""
 
     # 打印节点信息，输出最终格式
@@ -87,7 +88,8 @@ def print_node_context_info(node):
 
     # 控制空格：确保每两个字符之间有一个空格，且开头和结尾没有多余的空格
     # 使用 split 和 join 来处理
-    result = f"{node['line']} {parent_line if parent_line else ''} {siblings_str} {children_str}".strip()
+    # result = f"{node['line']} {parent_line if parent_line else ''} {siblings_str} {children_str}".strip()
+    result = f"{node['line']} {parent_line if parent_line else ''} {children_str}".strip()
     result = ' '.join(result.split())
 
     # print(result)
@@ -129,8 +131,14 @@ def process_files(input_folder, output_folder):
 if __name__ == '__main1__':
     # 示例树形结构文本
     text = """
-    <NL>C2D3
-      <L>C2D3
+    <NL>A0E5
+      <NL>A3E5
+        <L>A3B4
+        <L>D4E5
+      <NL>B0E3
+        <L>B1C2
+        <L>C2D3
+        <L>D0E1
     """
 
     # 解析树形结构

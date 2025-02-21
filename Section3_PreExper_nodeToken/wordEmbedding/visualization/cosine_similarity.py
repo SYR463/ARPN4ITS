@@ -8,13 +8,13 @@ import time
 
 # 设置参数, model_name: cbow, skipgram, combined
 model_name = "combined"
-tree_num = 1;
+tree_num = 1
 
 time = time.strftime("%m%d%H%M", time.localtime())
 vocab_path = "/mnt/d/project/python/ARPN4ITS/vocab/vocab_preExper.json"
 model_dir = f"/mnt/d/project/python/ARPN4ITS/Section3_PreExper_nodeToken/wordEmbedding/weights/{model_name}_preExper"
 pic_title = f"Cosine Similarity of R-tree_{tree_num}"
-output_path = f"example{tree_num}_cosineSimilarity_{model_name}_{time}.png"
+output_path = f"cosSim/cosSim_{model_name}_tree{tree_num}_{time}.png"
 
 
 # 可视化余弦相似度矩阵
@@ -33,11 +33,15 @@ def plot_cosine_similarity_matrix(similarity_matrix, word_list, custom_label_map
     custom_labels = [custom_label_mapping.get(node, node) for node in word_list]  # 映射节点到简化标签
 
     # 绘制热图
-    sns.heatmap(similarity_matrix, annot=True, fmt=".2f", cmap="YlGnBu",
+    sns.heatmap(similarity_matrix, annot=True, fmt=".2f", cmap="YlGnBu", annot_kws={"size": 14},
                 xticklabels=custom_labels, yticklabels=custom_labels)
     plt.title(title)
-    plt.xlabel("Words")
-    plt.ylabel("Words")
+    # plt.xlabel("Words")
+    # plt.ylabel("Words")
+
+    # 设置标签的字体大小
+    plt.xticks(rotation=0, fontsize=16)  # 调整x轴标签字体大小并旋转标签
+    plt.yticks(rotation=0, fontsize=16)  # 调整y轴标签字体大小
 
     # 保存并显示图像
     plt.savefig(output_path)

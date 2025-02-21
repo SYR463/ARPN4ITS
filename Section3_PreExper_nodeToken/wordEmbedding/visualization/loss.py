@@ -1,5 +1,6 @@
 import json
 import matplotlib.pyplot as plt
+import time
 
 
 # 从文件加载损失数据
@@ -36,8 +37,10 @@ def plot_loss(loss_data, output_path):
 if __name__ == '__main__':
     # model_name: cbow, skipgram, combined
     model_name = "combined"
+
+    time = time.strftime("%m%d%H%M", time.localtime())
     file_path = f'/mnt/d/project/python/ARPN4ITS/Section3_PreExper_nodeToken/wordEmbedding/weights/{model_name}_preExper/loss.json'
-    output_path = f"/mnt/d/project/python/ARPN4ITS/Section3_PreExper_nodeToken/wordEmbedding/visualization/{model_name}_loss.png"
+    output_path = f"/mnt/d/project/python/ARPN4ITS/Section3_PreExper_nodeToken/wordEmbedding/visualization/loss/loss_{model_name}_{time}.png"
 
     # 加载并绘制损失变化
     loss_data = load_loss_data(file_path)

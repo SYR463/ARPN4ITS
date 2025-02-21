@@ -37,15 +37,21 @@ def create_MBR_vocab(vocab, M, N):
     :return: MBR词汇表
     """
 
+    # 创建叶节点
+    for x1 in range(N-1):
+        for y1 in range(M-1):
+            word = num_to_alpha(x1) + str(y1) +num_to_alpha(x1+1) + str(y1+1)
+            leafWord = '<L>' + word
+            vocab.append(leafWord)
 
+
+    # 创建非叶节点
     for x1 in range(N):
         for x2 in range(x1+1, N):
             for(y1) in range(M):
                 for(y2) in range(y1+1, M):
                     word = num_to_alpha(x1) + str(y1) +num_to_alpha(x2) + str(y2)
-                    leafWord = '<L>' + word
                     nonLeafWord = '<NL>' + word
-                    vocab.append(leafWord)
                     vocab.append(nonLeafWord)
     return vocab
 
