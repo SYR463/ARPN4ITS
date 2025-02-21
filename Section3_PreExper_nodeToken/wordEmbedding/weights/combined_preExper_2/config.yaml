@@ -1,0 +1,15 @@
+checkpoint_frequency: null
+dataset: RandomGenerate
+epochs: 1000
+filter: true
+learning_rate: 0.025
+model_dir: weights/combined_preExper
+model_name: combined
+optimizer: Adam
+shuffle: true
+train_batch_size: 256
+train_data_dir: /mnt/d/project/Java/rtree_construct/preExperData/RTreeTokenContext/train
+train_steps: null
+val_batch_size: 256
+val_data_dir: /mnt/d/project/Java/rtree_construct/preExperData/RTreeTokenContext/val
+val_steps: null
