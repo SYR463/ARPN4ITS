@@ -1,8 +1,8 @@
 # model_name: cbow, skipgram, combined
-model_name: cbow
+model_name: combined
 # 是否需要筛选数据，即将 NL 与 L 分开处理（filter=True）
-filter: False
-model_dir: weights/cbow_preExper
+filter: True
+model_dir: weights/combined_preExper
 epochs: 1000
 
 dataset: RandomGenerate

@@ -131,7 +131,7 @@ def train(config):
 
     trainer = Trainer(
         model=model,
-        epochs=config["epoch"],
+        epochs=config["epochs"],
         train_dataloader=train_dataloader,
         train_steps=config["train_steps"],
         val_dataloader=val_dataloader,

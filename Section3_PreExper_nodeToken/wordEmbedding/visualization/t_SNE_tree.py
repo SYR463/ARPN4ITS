@@ -21,7 +21,7 @@ model_name = "combined"
 time = time.strftime("%m%d%H%M", time.localtime())
 vocab_path = "/mnt/d/project/python/ARPN4ITS/vocab/vocab_preExper.json"
 tsne_output_path = f"tsne/tsne_{model_name}_tree_{time}.png"
-model_dir = f"/mnt/d/project/python/ARPN4ITS/Section3_PreExper_nodeToken/wordEmbedding/weights/{model_name}_preExper"
+model_dir = f"/mnt/d/project/python/ARPN4ITS/Section3_PreExper_nodeToken/wordEmbedding/weights/{model_name}_preExper_best"
 pic_title = f"t-SNE of {model_name}"
 
 dataset_path = "/mnt/d/project/Java/rtree_construct/preExperData/RTreeToken"
@@ -48,7 +48,7 @@ def tsne_embeddings(embeddings, n_components=2, random_state=42):
     reduced_embeddings = tsne.fit_transform(embeddings)
     return reduced_embeddings
 
-def plot_tsne_embeddings(reduced_embeddings, word_list, colors, title=pic_title, output_path=tsne_output_path):
+def plot_tsne_embeddings(reduced_embeddings, word_list, colors, special_words=None, title=pic_title, output_path=tsne_output_path):
     """
     绘制t-SNE降维后的词向量
     :param reduced_embeddings: t-SNE降维后的二维词向量
@@ -57,14 +57,19 @@ def plot_tsne_embeddings(reduced_embeddings, word_list, colors, title=pic_title,
     """
     plt.figure(figsize=(12, 8))
 
+    # 为每个点设置大小，特殊点的大小较大
+    sizes = [200 if word in special_words else 50 for word in word_list]  # 特殊点大小设置为200，其他点为50
+
     # 绘制散点图
-    plt.scatter(reduced_embeddings[:, 0], reduced_embeddings[:, 1], c=colors, s=50, alpha=0.7)
+    plt.scatter(reduced_embeddings[:, 0], reduced_embeddings[:, 1], c=colors, s=sizes, alpha=0.7)
     # plt.scatter(reduced_embeddings[:, 0], reduced_embeddings[:, 1], s=50, alpha=0.7)
 
     # 添加词汇标签
     texts = []
     for i, word in enumerate(word_list):
-        text = plt.text(reduced_embeddings[i, 0], reduced_embeddings[i, 1], word, fontsize=5, alpha=0.7, ha='center')
+        # 检查词汇是否在特殊词汇集合中，调整标签字体大小
+        fontsize = 10 if word in special_words else 5  # 特殊词汇标签字体大，其他词汇保持小
+        text = plt.text(reduced_embeddings[i, 0], reduced_embeddings[i, 1], word, fontsize=fontsize, alpha=0.7, ha='center')
         texts.append(text)
 
     # # 添加标签（只为深棕色和墨绿色token显示标签）
@@ -87,9 +92,6 @@ def plot_tsne_embeddings(reduced_embeddings, word_list, colors, title=pic_title,
     plt.close()  # 关闭图形，以释放内存
 
 
-import matplotlib.pyplot as plt
-
-
 def get_token_definitions():
     """
     获取token集合
@@ -99,9 +101,9 @@ def get_token_definitions():
 
     #------------------ 根节点，中间节点相同; 设置不同的叶节点,观察词汇表的分布情况
 
-    black_tokens = {"<NL>A0E5"}
-    left_tokens = {"<NL>A3E5", "<L>D4E5", "<L>A3B4"}  # 左分支
-    right_tokens = {"<NL>B0E3", "<L>B0C1", "<L>C2D3", "<L>D0E1"}  # 右分支
+    # black_tokens = {"<NL>A0E5"}
+    # left_tokens = {"<NL>A3E5", "<L>D4E5", "<L>A3B4"}  # 左分支
+    # right_tokens = {"<NL>B0E3", "<L>B0C1", "<L>C2D3", "<L>D0E1"}  # 右分支
 
     # black_tokens = {"<NL>A0E5"}
     # left_tokens = {"<NL>A3E5", "<L>D4E5", "<L>A3B4"}  # 左分支
@@ -116,9 +118,9 @@ def get_token_definitions():
 
     #------------------ 根节点相同'<NL>A0E5'，中间节点替换为其相邻节点 '<NL>A3E5'->'<NL>A4E5' '<NL>B0E3'->'<NL>C0E3'
 
-    # black_tokens = {"<NL>A0E5"}
-    # left_tokens = {"<NL>A3E5", "<L>A3B4", "<L>D4E5"}  # 左分支
-    # right_tokens = {"<NL>C0E3", "<L>D1E2", "<L>D2E3", "<L>C0D1"}  # 右分支
+    black_tokens = {"<NL>A0E5"}
+    left_tokens = {"<NL>A3E5", "<L>A3B4", "<L>D4E5"}  # 左分支
+    right_tokens = {"<NL>C0E3", "<L>D1E2", "<L>D2E3", "<L>C0D1"}  # 右分支
 
     # black_tokens = {"<NL>A0E5"}
     # left_tokens = {"<NL>A4E5", "<L>A4B5", "<L>D4E5"}  # 左分支
@@ -126,9 +128,9 @@ def get_token_definitions():
 
     #------------------ 中间节点'<NL>A2D5'靠近中心的 R*-tree 结构
 
-    black_tokens = {"<NL>A0E5"}
-    left_tokens = {"<NL>A2D5", "<L>C2D3", "<L>A4B5"}  # 左分支
-    right_tokens = {"<NL>B0E2", "<L>B1C2", "<L>C1D2", "<L>D0E1"}  # 右分支.
+    # black_tokens = {"<NL>A0E5"}
+    # left_tokens = {"<NL>A2D5", "<L>C2D3", "<L>A4B5"}  # 左分支
+    # right_tokens = {"<NL>B0E2", "<L>B1C2", "<L>C1D2", "<L>D0E1"}  # 右分支.
 
     # black_tokens = {"<NL>A0E5"}
     # left_tokens = {"<NL>A2D5", "<L>C2D3", "<L>A4B5"}  # 左分支
@@ -150,6 +152,9 @@ def define_token_colors(word_list):
     # 获取token集合
     token_definitions = get_token_definitions()
 
+    # 合并特殊词汇集合（black, left, right）
+    special_words = set(token_definitions['black']).union(token_definitions['left']).union(token_definitions['right'])
+
     # 为每个词汇分配颜色
     colors = []
 
@@ -167,7 +172,7 @@ def define_token_colors(word_list):
         else:
             colors.append((179 / 255, 179 / 255, 179 / 255))  # 浅灰色
 
-    return colors
+    return colors, special_words
 
 
 def get_embeddings_for_word_list(word_list, vocab, embeddings):
@@ -203,8 +208,10 @@ def visualize_word_embeddings_from_saved(model_dir, folder_path, num_words=1):
     # 对词向量进行t-SNE降维
     reduced_embeddings = tsne_embeddings(used_embeddings)
 
+    colors, special_words = define_token_colors(word_list)
+
     # 可视化t-SNE结果
-    plot_tsne_embeddings(reduced_embeddings, word_list, colors=define_token_colors(word_list))
+    plot_tsne_embeddings(reduced_embeddings, word_list, colors=colors, special_words=special_words)
 
 
 

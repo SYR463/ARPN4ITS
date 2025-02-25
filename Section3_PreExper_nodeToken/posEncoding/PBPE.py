@@ -14,6 +14,9 @@
 
 import numpy as np
 import matplotlib.pyplot as plt
+import time
+
+time = time.strftime("%m%d%H%M", time.localtime())
 
 
 # 1. 正余弦编码（Sinusoidal Encoding） - 适用于序列结构
@@ -33,27 +36,68 @@ def sinusoidal_encoding(position, dim):
 
 
 # 2. Path-Based Positional Encoding（PBPE） - 适用于树结构
-def pbpe_encoding(path, max_depth, dim):
+def pbpe_encoding(path, max_depth, dim, alpha=1):
     """
     基于路径的位置编码（PBPE）
     :param path: 从根节点到目标节点的路径（如[1, 2, 4]）
     :param max_depth: 树的最大深度
     :param dim: 编码维度
+    :param alpha: 层次权重系数（默认值为-0.5）
     :return: 对应路径的PBPE编码
     """
-    # 基于路径的编码和位置的正余弦编码结合
+    # 初始化位置编码
     position_enc = np.zeros(dim)
     path_length = len(path)
 
+    # 为每个节点生成正余弦编码，并考虑层次影响
     for i in range(path_length):
-        sin_cos_encoding = sinusoidal_encoding(path[i], dim // path_length)  # 给每个节点一个正余弦编码
+        # 计算当前层次的权重：权重为alpha的i次方
+        layer_weight = alpha ** i  # 例如第一层为alpha^0，第二层为alpha^1，依此类推
+
+        # 为节点生成正余弦编码
+        sin_cos_encoding = sinusoidal_encoding(path[i], dim // path_length)
+
+        # 调整每个节点的编码以考虑其层次权重
+        position_enc[i * (dim // path_length):(i + 1) * (dim // path_length)] = layer_weight * sin_cos_encoding
+
+    # # 根节点处理：可以增强根节点的影响（根据需求可调整）
+    # if path_length == 1:  # 根节点
+    #     position_enc *= 2  # 假设增强根节点的影响
+
+    return position_enc
+
+
+def pbpe_encoding_with_weight(path, max_depth, dim, alpha=-0.5):
+    """
+    基于路径的位置编码（PBPE）
+    :param path: 从根节点到目标节点的路径（如[1, 2, 4]）
+    :param max_depth: 树的最大深度
+    :param dim: 编码维度
+    :param alpha: 层次权重系数（默认值为-0.5）
+    :return: 对应路径的PBPE编码
+    """
+    # 初始化路径编码
+    position_enc = np.zeros(dim)
+    path_length = len(path)
+
+    # 为每个节点生成正余弦编码，并将它们拼接成路径编码
+    for i in range(path_length):
+        sin_cos_encoding = sinusoidal_encoding(path[i], dim // path_length)  # 为节点生成正余弦编码
         position_enc[i * (dim // path_length):(i + 1) * (dim // path_length)] = sin_cos_encoding
+
+    # 计算层次权重：对整个路径编码乘以层次权重（alpha的path_length次方）
+    layer_weight = alpha ** (path_length - 1)  # 计算路径的层次权重：假设路径长度为3，根节点的权重为1，第二层为alpha，第三层为alpha^2
+    position_enc = position_enc * layer_weight # 对整个路径编码乘以层次权重
+
+    # # 根节点处理：可以增强根节点的影响（根据需求可调整）
+    # if path_length == 1:  # 根节点
+    #     path_encoding *= 2  # 假设增强根节点的影响
 
     return position_enc
 
 
 # 3. 计算树中每个节点的位置编码
-def calculate_node_encodings(tree_structure, max_depth, dim):
+def calculate_node_encodings(tree_structure, max_depth, dim, alpha=-0.5):
     """
     计算树中每个节点的位置编码
     :param tree_structure: 树的结构，节点的路径信息（如[[8], [8, 6], [8, 7], [8, 6, 1], [8, 6, 2], [8, 7, 1], [8, 7, 2], [8, 7, 3]]）
@@ -64,7 +108,7 @@ def calculate_node_encodings(tree_structure, max_depth, dim):
 
     # 遍历树的每一个节点
     for path in tree_structure:
-        encoding = pbpe_encoding(path, max_depth, dim)
+        encoding = pbpe_encoding(path, max_depth, dim, alpha)
         node_encodings.append(encoding)
 
     return np.array(node_encodings)
@@ -75,7 +119,7 @@ def extract_position_encoding():
     # 树结构的路径（如路径从根节点到叶节点）
     max_depth = 3  # 树的最大深度为2
     tree_paths = [
-        [8],    # 根节点
+        [8],  # 根节点
         [8, 6],
         [8, 7],
         [8, 6, 1],
@@ -86,8 +130,9 @@ def extract_position_encoding():
     ]  # 树的路径
 
     # 提取每个路径的PBPE编码（去除节点信息）
-    pbpe_codes = np.array([pbpe_encoding(path, max_depth, 15) for path in tree_paths])  # 假设编码维度为16
+    pbpe_codes = np.array([pbpe_encoding(path, max_depth, 16, alpha=1) for path in tree_paths])  # 假设编码维度为16
 
+    # 确保 pbpe_codes 统一为相同的形状
     return pbpe_codes
 
 
@@ -113,24 +158,20 @@ def visualize_position_encoding():
     for i in range(len(pbpe_codes)):
         for j in range(pbpe_codes.shape[1]):
             value = round(pbpe_codes[i, j], 2)  # 取小数点后两位
-            ax.text(j, i, str(value), ha="center", va="center", color="white", fontsize=8)
-
+            ax.text(j, i, str(value), ha="center", va="center", color="white", fontsize=10)
 
     # 添加色条
     fig.colorbar(cax)
 
     # 保存图像到文件
     plt.tight_layout()
-    plt.savefig('PBPE_position_encoding.png')
+    plt.savefig(f'PBPE_posEnc_{time}.png')
     print("图像已保存为 'PBPE_position_encoding.png'")
 
 
-
 if __name__ == '__main__':
-
     # 运行并可视化
     visualize_position_encoding()
-
 
 if __name__ == '__main1__':
     # 示例：树结构

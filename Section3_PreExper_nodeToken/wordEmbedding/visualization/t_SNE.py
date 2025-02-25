@@ -109,9 +109,9 @@ def define_token_colors(word_list):
     # pattern = r"^<NL>A\dB\d$"
 
     # 定义正则表达式匹配以"<NL>"开头的token，后跟字母和数字
-    # pattern = r"^<NL>([A-Z])\d([A-Z])\d$"  # 匹配模式：<NL>A_B_、<NL>A_C_ 等
-    pattern = r"^<NL>([A-Z])([0-9])([A-Z])([0-9])"  # 匹配模式：<NL>A_B_、<NL>A_C_ 等
-    # pattern = r"^<L>.*"  # 匹配模式：<NL>A_B_、<NL>A_C_ 等
+    pattern = r"^<NL>([A-Z])\d([A-Z])\d$"  # 匹配模式：<NL>A_B_、<NL>A_C_ 等
+    # pattern = r"^<NL>([A-Z])([0-9])([A-Z])([0-9])"  # 匹配模式：<NL>A_B_、<NL>A_C_ 等
+    # pattern = r"^<L>.*"  # 匹配模式：<L>*
     # pattern = r"^<NL>([A-Z]).*"  # 匹配模式：<NL>A_、<NL>B_ 等
 
 
@@ -133,10 +133,12 @@ def define_token_colors(word_list):
     for word in word_list:
         match = re.match(pattern, word)
         if match:
-            # rule = match.group(1) + match.group(2)
+            # 按照横坐标分配颜色, 即AB, AC
+            rule = match.group(1) + match.group(2)
             # rule = match.group(1)
 
-            rule = ord(match.group(3)) - ord(match.group(1)) + int(match.group(4)) - int(match.group(2))
+            # 按照面积分配颜色面积
+            # rule = ord(match.group(3)) - ord(match.group(1)) + int(match.group(4)) - int(match.group(2))
 
             # 随机生成颜色并记录，确保颜色之间的差异较大
             if rule not in color_map:

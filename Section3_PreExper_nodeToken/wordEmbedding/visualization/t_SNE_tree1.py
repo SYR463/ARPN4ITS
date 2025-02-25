@@ -58,9 +58,6 @@ def plot_tsne_embeddings(reduced_embeddings, word_list, colors, title=pic_title,
     plt.close()  # 关闭图形，以释放内存
 
 
-import matplotlib.pyplot as plt
-
-import matplotlib.pyplot as plt
 
 def define_token_colors(word_list, parsed_tree):
     """

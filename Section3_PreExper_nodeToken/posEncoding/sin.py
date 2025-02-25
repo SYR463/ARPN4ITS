@@ -1,6 +1,9 @@
 import numpy as np
 import matplotlib.pyplot as plt
+import time
 
+
+time = time.strftime("%m%d%H%M", time.localtime())
 
 # 先序遍历树结构并生成节点序列
 def preorder_traversal(root):
@@ -47,14 +50,14 @@ def visualize_position_encoding(encoded_positions, node_sequence):
     for i in range(len(node_sequence)):
         for j in range(encoded_positions.shape[1]):
             value = round(encoded_positions[i, j], 2)  # 取小数点后两位
-            ax.text(j, i, str(value), ha="center", va="center", color="white", fontsize=8)
+            ax.text(j, i, str(value), ha="center", va="center", color="white", fontsize=10)
 
     # 添加色条
     fig.colorbar(cax)
 
     # 保存图像到文件
     plt.tight_layout()
-    plt.savefig('sin_position_encoding.png')
+    plt.savefig(f'sin_position_encoding_{time}.png')
     print("图像已保存为 'sin_position_encoding.png'")
 
 
@@ -71,6 +74,7 @@ if __name__ == '__main__':
     # 序列化树结构
     # node_sequence = preorder_traversal(tree)
     node_sequence = [8, 6, 1, 2, 7, 3, 4, 5]
+    # node_sequence = [4, 1, 1, 2, 2, 1, 2, 3]
     print(f"序列化后的树结构：{node_sequence}")
 
     # 对序列中的每个节点生成正余弦编码
