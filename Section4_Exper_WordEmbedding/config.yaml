@@ -1,0 +1,25 @@
+# model_name: cbow, skipgram, combined
+model_name: combined
+# 是否需要筛选数据，即将 NL 与 L 分开处理（filter=True）
+filter: True
+model_dir: weights/combined_preExper
+epochs: 100
+
+dataset: RandomGenerate
+# 处理后的带有 label 的 R-tree 的 node token 上下文
+train_data_dir: /root/ARPN4ITS/dataset/train
+val_data_dir: /root/ARPN4ITS/dataset/val
+#train_data_dir: /root/ARPN4ITS/dataset1/train/train
+#val_data_dir: /root/ARPN4ITS/dataset1/val/val
+train_batch_size: 512
+val_batch_size: 512
+shuffle: True
+
+optimizer: Adam
+learning_rate: 0.5
+
+train_steps: 
+val_steps:
+checkpoint_frequency: 2
+
+

@@ -58,11 +58,11 @@ def create_MBR_vocab(vocab, M, N):
 
 if __name__ == '__main__':
 
-    # 预定义的网格个数
-    M = 6
-    N = 5
+    # 预定义的网格个数 M行N列
+    M = 151
+    N = 6
 
-    vocab_filename = 'vocab_preExper.json'
+    vocab_filename = 'vocab_Exper.json'
 
     vocab = []
     vocab = create_MBR_vocab(vocab, M, N)
